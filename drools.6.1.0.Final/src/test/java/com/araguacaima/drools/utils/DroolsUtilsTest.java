@@ -1,6 +1,5 @@
 package com.araguacaima.drools.utils;
 
-import com.araguacaima.drools.DroolsAuthenticator;
 import com.bbva.utils.NotNullsLinkedHashSet;
 import com.bbva.utils.templates.model.xls.BackendData;
 import com.bbva.utils.templates.model.xls.InputAndOutputParameters;
