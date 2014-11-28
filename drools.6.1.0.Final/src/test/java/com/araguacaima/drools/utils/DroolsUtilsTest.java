@@ -32,7 +32,6 @@ import java.util.ResourceBundle;
 public class DroolsUtilsTest {
 
     private DroolsUtils droolsUtils;
-    private static final ResourceBundle properties = ResourceBundle.getBundle("drools");
 
     @Before
     public void init() {
