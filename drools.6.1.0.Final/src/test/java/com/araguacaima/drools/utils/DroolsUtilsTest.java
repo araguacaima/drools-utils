@@ -40,8 +40,8 @@ public class DroolsUtilsTest {
     @Test
     public void executeRule() throws Exception {
         Collection<Object> assets = new ArrayList<Object>();
-        StatelessKieSession statelessKieSession = droolsUtils.getStatelessKieSession();
-        Assert.assertNotNull(statelessKieSession);
+//        StatelessKieSession statelessKieSession = droolsUtils.getStatelessKieSession();
+//        Assert.assertNotNull(statelessKieSession);
         Template template = new Template();
         NotNullsLinkedHashSet<MultiChannelServiceDetail> detalleServicios = new NotNullsLinkedHashSet<MultiChannelServiceDetail>(true);
         MultiChannelServiceDetail multiChannelServiceDetail = new MultiChannelServiceDetail();
@@ -60,10 +60,11 @@ public class DroolsUtilsTest {
         multiChannelServiceDetail.setParametrosDeEntradaYSalida(inputOutputParameter);
         detalleServicios.add(multiChannelServiceDetail);
         template.setDetalleServicios(detalleServicios);
-        assets.add(template);
+    //    assets.add(template);
+     //   assets.add(backEndDataList);
+        assets.add(backEndData1);
         droolsUtils.runRulesEngineWithAssets(assets);
         Assert.assertNotNull(assets);
-        Assert.assertEquals(1, assets.size());
     }
 
 
