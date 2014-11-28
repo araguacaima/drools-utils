@@ -36,10 +36,7 @@ public class DroolsUtilsTest {
 
     @Before
     public void init() {
-        DroolsAuthenticator droolsAuthenticator = new DroolsAuthenticator(
-                properties.getString("jboss.drools.workbench.user"),
-                properties.getString("jboss.drools.workbench.password"));
-        droolsUtils = new DroolsUtils(droolsAuthenticator);
+        droolsUtils = new DroolsUtils();
     }
 
     @Test
@@ -68,7 +65,7 @@ public class DroolsUtilsTest {
         assets.add(template);
         droolsUtils.runRulesEngineWithAssets(assets);
         Assert.assertNotNull(assets);
-        Assert.assertEquals(2, assets.size());
+        Assert.assertEquals(1, assets.size());
     }
 
 

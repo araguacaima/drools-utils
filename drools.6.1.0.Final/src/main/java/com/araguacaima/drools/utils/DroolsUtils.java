@@ -1,6 +1,5 @@
 package com.araguacaima.drools.utils;
 
-import com.araguacaima.drools.DroolsAuthenticator;
 import com.araguacaima.drools.utils.decorator.DroolsWorkbenchDecorator;
 import org.drools.core.io.impl.UrlResource;
 import org.kie.api.KieServices;
@@ -11,7 +10,6 @@ import org.kie.api.runtime.StatelessKieSession;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 
@@ -29,9 +27,6 @@ import java.util.ResourceBundle;
 public class DroolsUtils {
 
     private static final ResourceBundle properties = ResourceBundle.getBundle("drools");
-    //    private DroolsAuthenticator droolsAuthenticator;
-    protected final static String EOL = System.getProperty("line.separator");
-    private static final Random rand = new Random();
     private String protocol;
     private String server;
     private String port;
@@ -41,7 +36,7 @@ public class DroolsUtils {
     private String version;
 
     @SuppressWarnings("UnusedDeclaration")
-    private DroolsUtils() {
+    public DroolsUtils() {
         this.protocol = properties.getString("jboos.drools.workbench.server.protocol");
         this.server = properties.getString("jboos.drools.workbench.server.name");
         this.port = properties.getString("jboos.drools.workbench.server.port");
@@ -51,37 +46,6 @@ public class DroolsUtils {
         this.version = properties.getString("jboss.drools.workbench.maven.version");
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public DroolsUtils(String username, String password) {
-        this(new DroolsAuthenticator(username, password));
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public DroolsUtils(DroolsAuthenticator droolsAuthenticator) {
-        this();
-/*        this.droolsAuthenticator = droolsAuthenticator;
-        Authenticator.setDefault(this.droolsAuthenticator);*/
-    }
-
-/*    public InputStream getArtifact() throws Exception {
-        return getResurce(MavenArtifactDecorator.decorateArtifactWithFullGroupPath(
-                        properties.getString("jboos.drools.workbench.app.name"),
-                        properties.getString("jboss.drools.workbench.maven.groupid"),
-                        properties.getString("jboss.drools.workbench.maven.artifactid"),
-                        properties.getString("jboss.drools.workbench.maven.version")),
-                "application/java-archive",
-                "UTF-8");
-    }
-
-    public InputStream getResurce(String source, String contentType, String charset) throws Exception {
-        HttpUtil httpUtil = new HttpUtil(properties.getString("jboos.drools.workbench.server.name"),
-                Integer.valueOf(properties.getString("jboos.drools.workbench.server.port")),
-                droolsAuthenticator.getUsername(),
-                droolsAuthenticator.getPassword());
-        return httpUtil.getContentAsStream(source, null, "text/plain", "UTF-8", contentType, charset, HttpUtil.METHOD_TYPE.GET);
-    }
-*/
-
     public StatelessKieSession getStatelessKieSession() throws Exception {
         String url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
         KieServices ks = KieServices.Factory.get();
@@ -89,9 +53,6 @@ public class DroolsUtils {
 
         UrlResource urlResource = (UrlResource) ks.getResources()
                 .newUrlResource(url);
-//        urlResource.setUsername(properties.getString("jboss.drools.workbench.user"));
-//        urlResource.setPassword(properties.getString("jboss.drools.workbench.password"));
-//        urlResource.setBasicAuthentication("enabled");
         InputStream is = urlResource.getInputStream();
 
         KieModule kModule = kr.addKieModule(ks.getResources().newInputStreamResource(is));
