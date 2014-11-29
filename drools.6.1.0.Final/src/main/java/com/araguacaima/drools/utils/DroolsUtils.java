@@ -1,6 +1,7 @@
 package com.araguacaima.drools.utils;
 
 import com.araguacaima.drools.utils.decorator.DroolsWorkbenchDecorator;
+import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.core.io.impl.UrlResource;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieModule;
@@ -60,8 +61,18 @@ public class DroolsUtils {
         return kContainer.newStatelessKieSession();
     }
 
+    public StatelessKieSession getStatelessKieSession2() throws Exception {
+        String url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
+        // make sure you use "LATEST" here!
+        ReleaseIdImpl releaseId = new ReleaseIdImpl(groupid, artifactid, version);
+        KieServices ks = KieServices.Factory.get();
+        ks.getResources().newUrlResource(url);
+        KieContainer kieContainer = ks.newKieContainer(releaseId);
+        return kieContainer.newStatelessKieSession();
+    }
+
     public void runRulesEngineWithAssets(Collection<Object> assets) throws Exception {
-        StatelessKieSession kSession = getStatelessKieSession();
+        StatelessKieSession kSession = getStatelessKieSession2();
         kSession.execute(assets);
     }
 }
