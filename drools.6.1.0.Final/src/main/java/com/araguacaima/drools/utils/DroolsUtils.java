@@ -1,14 +1,16 @@
 package com.araguacaima.drools.utils;
 
 import com.araguacaima.drools.utils.decorator.DroolsWorkbenchDecorator;
+import com.araguacaima.drools.utils.factory.KieSessionImpl;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.core.io.impl.UrlResource;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieModule;
 import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.KieScanner;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.StatelessKieSession;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -28,13 +30,16 @@ import java.util.ResourceBundle;
 public class DroolsUtils {
 
     private static final ResourceBundle properties = ResourceBundle.getBundle("drools");
-    private String protocol;
-    private String server;
-    private String port;
-    private String appName;
-    private String groupid;
-    private String artifactid;
-    private String version;
+    private final String kieSessionType;
+    private final String kieSession;
+    private final String protocol;
+    private final String server;
+    private final String port;
+    private final String appName;
+    private final String groupid;
+    private final String artifactid;
+    private final String version;
+    private final String url;
 
     @SuppressWarnings("UnusedDeclaration")
     public DroolsUtils() {
@@ -45,34 +50,77 @@ public class DroolsUtils {
         this.groupid = properties.getString("jboss.drools.workbench.maven.groupid");
         this.artifactid = properties.getString("jboss.drools.workbench.maven.artifactid");
         this.version = properties.getString("jboss.drools.workbench.maven.version");
+        this.kieSession = properties.getString("jboss.drools.workbench.kie.session");
+        this.kieSessionType = properties.getString("jboss.drools.workbench.kie.session.type");
+        url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
     }
 
-    public StatelessKieSession getStatelessKieSession() throws Exception {
-        String url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
-        KieServices ks = KieServices.Factory.get();
-        KieRepository kr = ks.getRepository();
-
-        UrlResource urlResource = (UrlResource) ks.getResources()
-                .newUrlResource(url);
-        InputStream is = urlResource.getInputStream();
-
-        KieModule kModule = kr.addKieModule(ks.getResources().newInputStreamResource(is));
-        KieContainer kContainer = ks.newKieContainer(kModule.getReleaseId());
-        return kContainer.newStatelessKieSession();
+    public String getUrl() {
+        return url;
     }
 
-    public StatelessKieSession getStatelessKieSession2() throws Exception {
-        String url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
-        // make sure you use "LATEST" here!
+    public String getKieSessionType() {
+        return kieSessionType;
+    }
+
+    public String getKieSession() {
+        return kieSession;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public String getGroupid() {
+        return groupid;
+    }
+
+    public String getArtifactid() {
+        return artifactid;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    KieContainer getKieContainer2() {
+
         ReleaseIdImpl releaseId = new ReleaseIdImpl(groupid, artifactid, version);
         KieServices ks = KieServices.Factory.get();
         ks.getResources().newUrlResource(url);
-        KieContainer kieContainer = ks.newKieContainer(releaseId);
-        return kieContainer.newStatelessKieSession();
+        return ks.newKieContainer(releaseId);
     }
 
+    KieContainer getKieContainer1() throws IOException {
+
+        KieServices ks = KieServices.Factory.get();
+        KieRepository kr = ks.getRepository();
+        UrlResource urlResource = (UrlResource) ks.getResources().newUrlResource(url);
+
+        InputStream is = urlResource.getInputStream();
+        KieModule kModule = kr.addKieModule(ks.getResources().newInputStreamResource(is));
+
+        KieContainer kContainer = ks.newKieContainer(kModule.getReleaseId());
+        KieScanner kieScanner = ks.newKieScanner(kContainer);
+        kieScanner.start(50000L);
+        return kContainer;
+    }
+
+
     public void runRulesEngineWithAssets(Collection<Object> assets) throws Exception {
-        StatelessKieSession kSession = getStatelessKieSession2();
-        kSession.execute(assets);
+        KieSessionImpl kieSessionImpl = KieSessionFactory.getSession(this);
+        kieSessionImpl.execute(assets);
     }
 }
