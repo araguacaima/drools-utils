@@ -53,23 +53,23 @@ public class DroolsUtilsTest {
         assets.add(backEndData3);
         droolsUtils.runRulesEngineWithAssets(assets);
         Assert.assertNotNull(assets);
-        Assert.assertEquals(12, assets.size());
+        Assert.assertEquals(5, assets.size());
         Collection<Comment> comments = (Collection<Comment>) CollectionUtils.select(assets, new Predicate() {
             @Override
             public boolean evaluate(Object o) {
                 return Comment.class.isAssignableFrom(o.getClass());
             }
         });
-        Assert.assertEquals(9, comments.size());
-/*        CollectionUtils.predicatedCollection(comments, new Predicate() {
+        Assert.assertEquals(2, comments.size());
+        CollectionUtils.predicatedCollection(comments, new Predicate() {
             @Override
             public boolean evaluate(Object o) {
                 Comment comment = (Comment) o;
                 return comment.getActualValue().equals(backEndData1.getAccion())
                         || comment.getActualValue().equals(backEndData3.getAccion());
             }
-        });*/
-
+        });
+        assets.clear();
         Template template = new Template();
         NotNullsLinkedHashSet<MultiChannelServiceDetail> detalleServicios = new NotNullsLinkedHashSet<MultiChannelServiceDetail>(true);
         MultiChannelServiceDetail multiChannelServiceDetail = new MultiChannelServiceDetail();
@@ -82,8 +82,25 @@ public class DroolsUtilsTest {
         multiChannelServiceDetail.setParametrosDeEntradaYSalida(inputOutputParameter);
         detalleServicios.add(multiChannelServiceDetail);
         template.setDetalleServicios(detalleServicios);
-
-
+        assets.add(template);
+        droolsUtils.runRulesEngineWithAssets(assets);
+        Assert.assertNotNull(assets);
+        Assert.assertEquals(5, assets.size());
+        comments = (Collection<Comment>) CollectionUtils.select(assets, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return Comment.class.isAssignableFrom(o.getClass());
+            }
+        });
+        Assert.assertEquals(2, comments.size());
+        CollectionUtils.predicatedCollection(comments, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                Comment comment = (Comment) o;
+                return comment.getActualValue().equals(backEndData1.getAccion())
+                        || comment.getActualValue().equals(backEndData3.getAccion());
+            }
+        });
     }
 
 
