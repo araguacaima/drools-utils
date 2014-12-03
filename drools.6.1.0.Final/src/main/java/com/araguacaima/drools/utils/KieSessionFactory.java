@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class KieSessionFactory {
     public static KieSessionImpl getSession(DroolsUtils droolsUtils) throws IOException {
-        KieContainer kieContainer = droolsUtils.getKieContainer1();
+        KieContainer kieContainer = droolsUtils.getKieContainer();
         if ("STATEFUL".equalsIgnoreCase(droolsUtils.getKieSessionType())) {
             return new KieStatefulSessionImpl(kieContainer.newKieSession(droolsUtils.getKieSession()));
         } else if ("STATELESS".equalsIgnoreCase(droolsUtils.getKieSessionType())) {

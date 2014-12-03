@@ -95,15 +95,7 @@ public class DroolsUtils {
         return version;
     }
 
-    KieContainer getKieContainer2() {
-
-        ReleaseIdImpl releaseId = new ReleaseIdImpl(groupid, artifactid, version);
-        KieServices ks = KieServices.Factory.get();
-        ks.getResources().newUrlResource(url);
-        return ks.newKieContainer(releaseId);
-    }
-
-    KieContainer getKieContainer1() throws IOException {
+    KieContainer getKieContainer() throws IOException {
 
         KieServices ks = KieServices.Factory.get();
         KieRepository kr = ks.getRepository();

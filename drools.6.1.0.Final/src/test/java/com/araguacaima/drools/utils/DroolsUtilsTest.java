@@ -2,10 +2,7 @@ package com.araguacaima.drools.utils;
 
 import com.bbva.utils.NotNullsLinkedHashSet;
 import com.bbva.utils.templates.model.business.Comment;
-import com.bbva.utils.templates.model.xls.BackendData;
-import com.bbva.utils.templates.model.xls.InputAndOutputParameters;
-import com.bbva.utils.templates.model.xls.MultiChannelServiceDetail;
-import com.bbva.utils.templates.model.xls.Template;
+import com.bbva.utils.templates.model.xls.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.junit.Assert;
@@ -39,7 +36,7 @@ public class DroolsUtilsTest {
     }
 
     @Test
-    public void executeRule() throws Exception {
+    public void testBackendDataRules() throws Exception {
         Collection<Object> assets = new ArrayList<Object>();
 
         final BackendData backEndData1 = new BackendData();
@@ -69,8 +66,22 @@ public class DroolsUtilsTest {
                         || comment.getActualValue().equals(backEndData3.getAccion());
             }
         });
-        assets.clear();
+
+    }
+
+    @Test
+    public void testTemplate() throws Exception {
+        Collection<Object> assets = new ArrayList<Object>();
+
+        final BackendData backEndData1 = new BackendData();
+        backEndData1.setAccion("TEST");
+        final BackendData backEndData2 = new BackendData();
+        backEndData2.setAccion("Crear");
+        final BackendData backEndData3 = new BackendData();
+        backEndData3.setAccion("CREAR");
+
         Template template = new Template();
+
         NotNullsLinkedHashSet<MultiChannelServiceDetail> detalleServicios = new NotNullsLinkedHashSet<MultiChannelServiceDetail>(true);
         MultiChannelServiceDetail multiChannelServiceDetail = new MultiChannelServiceDetail();
         InputAndOutputParameters inputOutputParameter = new InputAndOutputParameters();
@@ -80,13 +91,23 @@ public class DroolsUtilsTest {
         backEndDataList.add(backEndData3);
         inputOutputParameter.setBackendData(backEndDataList);
         multiChannelServiceDetail.setParametrosDeEntradaYSalida(inputOutputParameter);
+        TechnicalData technicalData = new TechnicalData();
+        multiChannelServiceDetail.setDatosTecnicos(technicalData);
+        NotNullsLinkedHashSet<Mapping> mappings = new NotNullsLinkedHashSet<Mapping>();
+        Mapping mapping = new Mapping();
+        mappings.add(mapping);
+        multiChannelServiceDetail.setMappings(mappings);
         detalleServicios.add(multiChannelServiceDetail);
         template.setDetalleServicios(detalleServicios);
         assets.add(template);
+        NotNullsLinkedHashSet<Entity> entidades = new NotNullsLinkedHashSet<Entity>();
+        Entity entity = new Entity();
+        entidades.add(entity);
+        template.setEntidades(entidades);
         droolsUtils.runRulesEngineWithAssets(assets);
         Assert.assertNotNull(assets);
-        Assert.assertEquals(5, assets.size());
-        comments = (Collection<Comment>) CollectionUtils.select(assets, new Predicate() {
+        Assert.assertEquals(12, assets.size());
+        Collection<Comment> comments = (Collection<Comment>) CollectionUtils.select(assets, new Predicate() {
             @Override
             public boolean evaluate(Object o) {
                 return Comment.class.isAssignableFrom(o.getClass());

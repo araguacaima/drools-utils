@@ -1,10 +1,15 @@
 package com.araguacaima.drools.utils.factory;
 
+import com.araguacaima.drools.utils.DroolsUtils;
+import org.drools.core.audit.WorkingMemoryConsoleLogger;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
 import java.util.Collection;
 
 /**
@@ -15,17 +20,33 @@ public class KieStatefulSessionImpl implements KieSessionImpl {
 
     public KieStatefulSessionImpl(KieSession kieSession) {
         this.statefullSession = kieSession;
-        statefullSession.addEventListener(new DebugAgendaEventListener());
-        statefullSession.addEventListener(new org.drools.core.event.DebugAgendaEventListener());
-        statefullSession.addEventListener(new DebugRuleRuntimeEventListener());
-        statefullSession.addEventListener(new DefaultProcessEventListener());
+        this.statefullSession.addEventListener(new DebugAgendaEventListener());
+        this.statefullSession.addEventListener(new DebugRuleRuntimeEventListener());
+        try {
+            this.statefullSession.setGlobal("console", System.out);
+        } catch (Throwable t) {
+            System.out.println("No que posible asociar la consola por defecto (System.out) a la variable global " +
+                    "\"console\". Por favor, valide que la misma exista y que está declarada como '"
+                    + PrintStream.class.getName() + "'");
+        }
+        try {
+            this.statefullSession.setGlobal("logger", LoggerFactory.getLogger(DroolsUtils.class));
+        } catch (Throwable t) {
+            System.out.println("No que posible asociar el Logger por defecto la variable global " +
+                    "\"logger\". Por favor, valide que la misma exista y que está declarada como '"
+                    + Logger.class.getName() + "'");
+        }
     }
 
     @Override
     public void execute(Collection<Object> assets) {
         try {
             for (Object object : assets) {
-                statefullSession.insert(object);
+                if (Collection.class.isAssignableFrom(object.getClass())) {
+                    execute((Collection<Object>) object);
+                } else {
+                    statefullSession.insert(object);
+                }
             }
             statefullSession.fireAllRules();
             assets.clear();
