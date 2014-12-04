@@ -2,7 +2,6 @@ package com.araguacaima.drools.utils.factory;
 
 import com.araguacaima.drools.utils.DroolsUtils;
 import org.drools.core.impl.StatelessKnowledgeSessionImpl;
-import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.StatelessKieSession;
@@ -11,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -57,5 +57,26 @@ public class KieStatelessSessionImpl implements KieSessionImpl {
         } finally {
             statefulKnowledgeSession.dispose();
         }
+    }
+
+    @Override
+
+    public Collection<Object> execute(Object asset) {
+        Collection<Object> assets = new ArrayList<Object>();
+        StatefulKnowledgeSession statefulKnowledgeSession = statelessSession.newWorkingMemory();
+        try {
+
+            if (Collection.class.isAssignableFrom(asset.getClass())) {
+                execute((Collection<Object>) asset);
+            } else {
+                statefulKnowledgeSession.insert(asset);
+            }
+            statefulKnowledgeSession.fireAllRules();
+
+            assets.addAll(statefulKnowledgeSession.getObjects());
+        } finally {
+            statefulKnowledgeSession.dispose();
+        }
+        return assets;
     }
 }

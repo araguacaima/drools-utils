@@ -1,8 +1,6 @@
 package com.araguacaima.drools.utils.factory;
 
 import com.araguacaima.drools.utils.DroolsUtils;
-import org.drools.core.audit.WorkingMemoryConsoleLogger;
-import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieSession;
@@ -10,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -54,6 +53,24 @@ public class KieStatefulSessionImpl implements KieSessionImpl {
         } finally {
             statefullSession.dispose();
         }
+    }
 
+    @Override
+    public Collection<Object> execute(Object asset) {
+        Collection<Object> assets = new ArrayList<Object>();
+        try {
+
+            if (Collection.class.isAssignableFrom(asset.getClass())) {
+                execute((Collection<Object>) asset);
+            } else {
+                statefullSession.insert(asset);
+            }
+
+            statefullSession.fireAllRules();
+            assets.addAll(statefullSession.getObjects());
+        } finally {
+            statefullSession.dispose();
+        }
+        return assets;
     }
 }

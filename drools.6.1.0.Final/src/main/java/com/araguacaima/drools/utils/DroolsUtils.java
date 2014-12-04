@@ -29,70 +29,25 @@ import java.util.ResourceBundle;
 
 public class DroolsUtils {
 
-    private static ResourceBundle properties;
-    private final String kieSessionType;
-    private final String kieSession;
-    private final String protocol;
-    private final String server;
-    private final String port;
-    private final String appName;
-    private final String groupid;
-    private final String artifactid;
-    private final String version;
-    private final String url;
+    private final DroolsConfig droolsConfig;
+    private String url;
 
-    public DroolsUtils(InputStream stream) throws IOException {
-        properties = new PropertyResourceBundle(stream);
-        this.protocol = properties.getString("jboos.drools.workbench.server.protocol");
-        this.server = properties.getString("jboos.drools.workbench.server.name");
-        this.port = properties.getString("jboos.drools.workbench.server.port");
-        this.appName = properties.getString("jboos.drools.workbench.app.name");
-        this.groupid = properties.getString("jboss.drools.workbench.maven.groupid");
-        this.artifactid = properties.getString("jboss.drools.workbench.maven.artifactid");
-        this.version = properties.getString("jboss.drools.workbench.maven.version");
-        this.kieSession = properties.getString("jboss.drools.workbench.kie.session");
-        this.kieSessionType = properties.getString("jboss.drools.workbench.kie.session.type");
-        url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
+    public DroolsUtils(DroolsConfig droolsConfig) throws IOException {
+        this.droolsConfig = droolsConfig;
+        String protocol = droolsConfig.getProtocol();
+        String server = droolsConfig.getServer();
+        String port = droolsConfig.getPort();
+        String appName = droolsConfig.getAppName();
+        String groupid = droolsConfig.getGroupid();
+        String artifactid = droolsConfig.getArtifactid();
+        String version = droolsConfig.getVersion();
+        String kieSession = droolsConfig.getKieSession();
+        String kieSessionType = droolsConfig.getKieSessionType();
+        this.url = DroolsWorkbenchDecorator.decorate(protocol, server, port, appName, groupid, artifactid, version);
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getKieSessionType() {
-        return kieSessionType;
-    }
-
-    public String getKieSession() {
-        return kieSession;
-    }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public String getGroupid() {
-        return groupid;
-    }
-
-    public String getArtifactid() {
-        return artifactid;
-    }
-
-    public String getVersion() {
-        return version;
+    public DroolsConfig getDroolsConfig() {
+        return droolsConfig;
     }
 
     KieContainer getKieContainer() throws IOException {
@@ -114,5 +69,10 @@ public class DroolsUtils {
     public void executeRules(Collection<Object> assets) throws Exception {
         KieSessionImpl kieSessionImpl = KieSessionFactory.getSession(this);
         kieSessionImpl.execute(assets);
+    }
+
+    public Collection<Object> executeRules(Object asset) throws Exception {
+        KieSessionImpl kieSessionImpl = KieSessionFactory.getSession(this);
+        return kieSessionImpl.execute(asset);
     }
 }

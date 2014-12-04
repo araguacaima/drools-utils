@@ -7,4 +7,6 @@ import java.util.Collection;
  */
 public interface KieSessionImpl {
     void execute(Collection<Object> assets);
+
+    Collection<Object> execute(Object asset);
 }
