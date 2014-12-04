@@ -2,7 +2,6 @@ package com.araguacaima.drools.utils;
 
 import com.araguacaima.drools.utils.decorator.DroolsWorkbenchDecorator;
 import com.araguacaima.drools.utils.factory.KieSessionImpl;
-import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.core.io.impl.UrlResource;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieModule;
@@ -13,6 +12,7 @@ import org.kie.api.runtime.KieContainer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 
@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 
 public class DroolsUtils {
 
-    private static final ResourceBundle properties = ResourceBundle.getBundle("drools");
+    private static ResourceBundle properties;
     private final String kieSessionType;
     private final String kieSession;
     private final String protocol;
@@ -41,8 +41,8 @@ public class DroolsUtils {
     private final String version;
     private final String url;
 
-    @SuppressWarnings("UnusedDeclaration")
-    public DroolsUtils() {
+    public DroolsUtils(InputStream stream) throws IOException {
+        properties = new PropertyResourceBundle(stream);
         this.protocol = properties.getString("jboos.drools.workbench.server.protocol");
         this.server = properties.getString("jboos.drools.workbench.server.name");
         this.port = properties.getString("jboos.drools.workbench.server.port");
@@ -111,7 +111,7 @@ public class DroolsUtils {
     }
 
 
-    public void runRulesEngineWithAssets(Collection<Object> assets) throws Exception {
+    public void executeRules(Collection<Object> assets) throws Exception {
         KieSessionImpl kieSessionImpl = KieSessionFactory.getSession(this);
         kieSessionImpl.execute(assets);
     }
