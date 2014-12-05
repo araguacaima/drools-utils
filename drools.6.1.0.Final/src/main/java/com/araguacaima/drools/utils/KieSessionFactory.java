@@ -4,7 +4,6 @@ import com.araguacaima.drools.utils.factory.KieSessionImpl;
 import com.araguacaima.drools.utils.factory.KieStatefulSessionImpl;
 import com.araguacaima.drools.utils.factory.KieStatelessSessionImpl;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 
 import java.io.IOException;
 
